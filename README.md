@@ -11,3 +11,5 @@ This code constructs a linear cellular partition of a spherical shell in 3D usin
 5. This is found by using Ohori et al.'s approach [1] to incrementally build linear cell complexes. The strategy is to create one dart per dual vertex. We then specify which vertex darts should appear in each of the faces. While constructing the faces we create lists corresponding to each volume that indicates which faces are on the boundary of the volume. Then we create the volumes by sewing the faces together.
 
 [1] Ohori K.A., Damiand G., Ledoux H. (2014) Constructing an n-dimensional Cell Complex from a Soup of (n − 1)-Dimensional Faces. In: Gupta P., Zaroliagis C. (eds) Applied Algorithms. ICAA 2014. Lecture Notes in Computer Science, vol 8321. Springer, Cham. https://doi.org/10.1007/978-3-319-04126-1_4
+
+For an author's copy, see https://3d.bk.tudelft.nl/ken/en/papers/.
