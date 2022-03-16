@@ -4,25 +4,25 @@ There is a notion of duality for the convex hull. Each face in the convex hull i
 
 The basic idea is to use extrusion on this dual to obtain the linear cellular partition of the spherical shell. However, this extrusion is done radially, from r_in to r_out. This will stretch each dual polygon and create edges perpendicular to the sphere that are not parallel to each other. Therefore, this requires a modification of the existing approach.
 
-We need the following objects:
-PARAMETERS
--r_in: Inner radius of the shell. Require r_in > 0.
--r_out: Outer radius of the shell. Require r_out > r_in.
-COMBINATORIAL MAPS
--shell: An empty 3-map that will contain the dual objects.
--chull_map: The 2-map corresponding to the convex hull of the sampled points.
-CONTAINERS
--shell_vertices: A container of the coordinate tuples/ point objects for vertices.
--inner_face: A vector/ circulator of handles to darts belonging to an inner face in clockwise order when viewed from r > r_in. This will be cleared for each inner face.
-ASSOCIATIVE MAPS/ ARRAYS
--chull_to_inner_vertex: A map from darts of chull_map to shell_vertices, particularly to inner vertices. The vertex is at the circumcenter or barycenter of the corresponding face scaled to r_in.
--chull_to_outer_vertex: A map from darts of chull_map to shell_vertices, particularly to outer vertices. The vertex is at the circumcenter or barycenter of the corresponding face scaled to r_out.
--3_sew_dict: A map from darts in chull_map to darts in shell informing how to 3-sew adjacent volumes.
--inner_to_outer: A map from inner darts to their corresponding outer darts.
--chull_to_inner_dart: A map from darts in chull_map to their corresponding inner darts in shell.
+We need the following objects:  
+PARAMETERS  
+-num_vols: Positive integer corresponding to the number of volumes in the partition of the spherical shell.  
+-r_in: Inner radius of the shell. Require r_in > 0.  
+-r_out: Outer radius of the shell. Require r_out > r_in.  
+COMBINATORIAL MAPS  
+-shell: An empty 3-map that will contain the dual objects.  
+-chull_map: The 2-map corresponding to the convex hull of the sampled points.  
+CONTAINERS  
+-shell_vertices: A container of the coordinate tuples/ point objects for vertices.  
+-inner_face: A vector/ circulator of handles to darts belonging to an inner face in clockwise order when viewed from r > r_in.   This will be cleared for each inner face.  
+ASSOCIATIVE MAPS/ ARRAYS  
+-chull_to_inner_vertex: A map from darts of chull_map to shell_vertices, particularly to inner vertices. The vertex is at the circumcenter or barycenter of the corresponding face scaled to r_in.  
+-chull_to_outer_vertex: A map from darts of chull_map to shell_vertices, particularly to outer vertices. The vertex is at the circumcenter or barycenter of the corresponding face scaled to r_out.  
+-3_sew_dict: A map from darts in chull_map to darts in shell informing how to 3-sew adjacent volumes.  
+-inner_to_outer: A map from inner darts to their corresponding outer darts.  
+-chull_to_inner_dart: A map from darts in chull_map to their corresponding inner darts in shell.  
 
-
-1. Randomly sample some points on a sphere with radius r_in.
+1. Randomly sample num_vols points on a sphere with radius r_in.
 
 2. Compute the convex hull of the collection of points using CGAL. Use CGAL to convert the triangulation to a combinatorial 2-map chull_map.
 
