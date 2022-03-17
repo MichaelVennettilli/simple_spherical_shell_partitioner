@@ -38,7 +38,7 @@ void make_chull(LCC_CH &lcc, double r_in, int num_pts){
   std::uniform_real_distribution<double> polar_dist(0.0,2*pi);
   std::vector<Poly_Point_3> points;
   for(int i=0; i<num_pts; i++){
-	  // Generate the azimuthal angle
+	  // Generate the angles
 	  azi_angle = acos(azimuthal_dist(mt));
 	  polar_angle = polar_dist(mt);
 	  points.push_back(Poly_Point_3(r_in*sin(azi_angle)*cos(polar_angle),
@@ -47,7 +47,13 @@ void make_chull(LCC_CH &lcc, double r_in, int num_pts){
   CGAL::convex_hull_3(points.begin(), points.end(), poly);
   Dart_handle_CH dh=CGAL::import_from_polyhedron_3<LCC_CH,Polyhedron_3>
     (lcc, poly);
-    return;
+  // Check the orientation
+  LCC_CH::Vector v1 = lcc.point(lcc.beta(dh,1))-lcc.point(dh);
+  LCC_CH::Vector v2 = lcc.point(lcc.beta(dh,0))-lcc.point(dh);
+  LCC_CH::Vector barycenter = lcc.barycenter<2>(dh) - CGAL::ORIGIN;
+  double signature = CGAL::cross_product(v1,v2)*barycenter;
+  if(signature>0.0) lcc.reverse_orientation();
+  return;
 }
 
 void print_vertices(LCC_CH &lcc){
@@ -64,14 +70,14 @@ int main()
 {
   LCC_CH lcc;
   double radius = 1.0;
-  int num_pts = 4;
+  int num_pts = 50;
   make_chull(lcc, radius, num_pts);
 
-  //print_vertices(lcc);
-  LCC_CH::Vertex_attribute_range::iterator it=lcc.vertex_attributes().begin();
-  std::cout<<"point: "<<lcc.point_of_vertex_attribute(it)<<std::endl;
-  std::cout<<"point: "<<lcc.point(lcc.dart_of_attribute<0>(it))<<std::endl;
-  //CGAL::draw(lcc);
+  print_vertices(lcc);
+  //LCC_CH::Vertex_attribute_range::iterator it=lcc.vertex_attributes().begin();
+  //std::cout<<"point: "<<lcc.point_of_vertex_attribute(it)<<std::endl;
+  //std::cout<<"point: "<<lcc.point(lcc.dart_of_attribute<0>(it))<<std::endl;
+  CGAL::draw(lcc);
 
 
   return EXIT_SUCCESS;
