@@ -1,0 +1,7 @@
+/home/michael/cgal_code/chull_to_spherical_shell_cells/build/CMakeFiles/edit_cache.dir
+/home/michael/cgal_code/chull_to_spherical_shell_cells/build/CMakeFiles/rebuild_cache.dir
+/home/michael/cgal_code/chull_to_spherical_shell_cells/build/CMakeFiles/cgal_check_build_system.dir
+/home/michael/cgal_code/chull_to_spherical_shell_cells/build/CMakeFiles/ALL_CGAL_TARGETS.dir
+/home/michael/cgal_code/chull_to_spherical_shell_cells/build/CMakeFiles/shell_partitioner.dir
+/home/michael/cgal_code/chull_to_spherical_shell_cells/build/CMakeFiles/CGAL_Qt5_moc_and_resources.dir
+/home/michael/cgal_code/chull_to_spherical_shell_cells/build/CMakeFiles/CGAL_Qt5_moc_and_resources_autogen.dir

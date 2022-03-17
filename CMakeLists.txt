@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.1...3.15)
 
-project( chull_sphere )
+project( chull_to_spherical_shell_cells )
 
 
 # CGAL and its components
@@ -37,6 +37,6 @@ endif()
 # ##########################################################
 
 
-create_single_source_cgal_program( "chull_sphere.cpp" )
+create_single_source_cgal_program( "shell_partitioner.cpp" )
 
 
