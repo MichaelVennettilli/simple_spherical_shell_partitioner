@@ -38,14 +38,20 @@ int main()
   std::vector<Point_3> points = random_spherical_points(num_pts);
   LCC_CH chull = make_chull(points);
   LCC_3 shell = generate_shell(points, r_in, r_out);
+  LCC_3 tri_shell = shell;
+  triangulate_all_faces(tri_shell);
   assert(chull.is_valid());
   assert(shell.is_valid());
+  assert(tri_shell.is_valid());
   //print_vertices(chull);
   //LCC_CH::Vertex_attribute_range::iterator it=lcc.vertex_attributes().begin();
   chull.display_characteristics(std::cout) << ", valid="
                                          << chull.is_valid() << std::endl;
   shell.display_characteristics(std::cout) << ", valid="
                                          << shell.is_valid() << std::endl;
+  tri_shell.display_characteristics(std::cout) << ", valid="
+                                         << tri_shell.is_valid() << std::endl;
+  CGAL::draw(tri_shell);
 
   return EXIT_SUCCESS;
 }

@@ -303,3 +303,75 @@ LCC_3 generate_shell(std::vector<Point_3> &points, double r_in, double r_out){
     glue_vols(chull, shell, glue_vol_map);
     return shell;
 }
+
+/*
+This computes the center of mass of a face.
+*/
+LCC_3::Point face_center_of_mass(LCC_3 &lcc, Dart_handle_3 dh_start){
+  LCC_3::Vector cumulative_sum = LCC_3::Vector(0.0,0.0,0.0);
+  LCC_3::Vector diff = LCC_3::Vector(0.0,0.0,0.0);
+  LCC_3::Point a, b;
+  double perimeter = 0.0;
+  Dart_handle_3 dh = dh_start;
+  do {
+    a = lcc.point(lcc.beta(dh,1));
+    b = lcc.point(dh);
+    diff = a-b;
+    cumulative_sum += ((a-CGAL::ORIGIN)+(b-CGAL::ORIGIN))*0.5*std::sqrt(diff.squared_length());
+    perimeter +=std::sqrt(diff.squared_length());
+    dh = lcc.beta(dh,1);
+  } while(dh != dh_start);
+  LCC_3::Point center_of_mass = CGAL::ORIGIN + (cumulative_sum/perimeter);
+  return center_of_mass;
+}
+
+/*
+This triangulates all faces in a LCC_3 by inserting the center of mass. Caution
+needs to be used. Inserting a point into a face creates more faces. You can't
+naively iterate over faces, as this will reserve too many marks. Using a for loop
+until it!=itend has the problem that itend is computed before faces are split.
+You need to keep updating the size. You can either do this in the for loop or
+use a while loop.
+*/
+void triangulate_all_faces(LCC_3 &lcc){
+  // Reserve a mark
+  LCC_3::size_type changed = lcc.get_new_mark();
+  // Declare some dart handles and storage for the center of mass.
+  Dart_handle_3 dh_start, dh;
+  LCC_3::Point center_of_mass;
+  // Loop over all darts until you reach the (changing) end.
+  LCC_3::Dart_range::iterator it=lcc.darts().begin();
+  while(it!=lcc.darts().end()){
+    // Have we already visited this dart?
+    if(!lcc.is_marked(it,changed)){
+      // It belongs to a face we haven't divided yet. Split it.
+      center_of_mass = face_center_of_mass(lcc,it);
+      dh_start = lcc.insert_point_in_cell<2>(it, center_of_mass);
+      dh = dh_start;
+      // Mark all of the resulting faces belonging to the same volume as
+      // dh_start
+      while(!lcc.is_marked(dh,changed)){
+        lcc.mark(dh,changed);
+        lcc.mark(lcc.beta(dh,1),changed);
+        lcc.mark(lcc.beta(dh,0),changed);
+        dh = lcc.beta(dh,2,1);
+      }
+      // If dh_start is 3-sewn, we need to mark darts on the same face on
+      // the other volume.
+      if(!lcc.is_free<3>(dh_start)){
+        dh = lcc.beta(dh_start,3,1);
+        while(!lcc.is_marked(dh,changed)){
+          lcc.mark(dh,changed);
+          lcc.mark(lcc.beta(dh,1),changed);
+          lcc.mark(lcc.beta(dh,0),changed);
+          dh = lcc.beta(dh,2,1);
+        }
+      }
+    }
+    ++it;
+  }
+  // Unmark everything before returning!
+  lcc.unmark_all(changed);
+  lcc.free_mark(changed);
+  return;
+}
