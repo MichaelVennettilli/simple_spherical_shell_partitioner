@@ -29,7 +29,14 @@ typedef CGAL::Linear_cell_complex_for_combinatorial_map<3> LCC_3;
 typedef LCC_3::Dart_handle           Dart_handle_3;
 typedef LCC_3::Vertex_attribute_handle           Vertex_handle_3;
 typedef std::map<Dart_handle_CH, Vertex_handle_3>   CHDH_to_VH3_map;
+typedef std::pair<CHDH_to_VH3_map,CHDH_to_VH3_map>   CHDH_to_VH3_pair;
+typedef std::pair<std::vector<Dart_handle_3>, std::map<Dart_handle_3, Dart_handle_3>> inner_face_and_map;
 // typedef LCC_3::Point                 Point_3;
+
+
+int positive_modulo(int i, int base){
+  return (n + (i % n)) % n;
+}
 
 /*
 This function iterates over the vertex attributes for the convex convex hull
@@ -84,7 +91,7 @@ LCC_CH make_chull(std::vector<Poly_Point_3> &points){
   return chull_lcc;
 }
 
-std::pair<CHDH_to_VH3_map,CHDH_to_VH3_map> make_dual_vertices(LCC_CH &chull,
+CHDH_to_VH3_pair make_dual_vertices(LCC_CH &chull,
   LCC_3 &shell, double r_in, double r_out){
   // Declare the maps.
   CHDH_to_VH3_map inner_vertices;
@@ -100,6 +107,8 @@ std::pair<CHDH_to_VH3_map,CHDH_to_VH3_map> make_dual_vertices(LCC_CH &chull,
       // Add the points to the vertex container and get their handles.
       Vertex_handle_3 inner_handle = shell.create_vertex_attribute<>(inner_point);
       Vertex_handle_3 outer_handle = shell.create_vertex_attribute<>(outer_point);
+      // Iterate over the face and add the (dart, dual vertex) pairs to the
+      // appropriate maps.
       Dart_handle_CH dh_start = it;
       Dart_handle_CH dh = it;
       do {
@@ -108,6 +117,81 @@ std::pair<CHDH_to_VH3_map,CHDH_to_VH3_map> make_dual_vertices(LCC_CH &chull,
         dh = chull.beta(dh,1);
       } while (dh != dh_start);
   }
-  std::pair<CHDH_to_VH3_map,CHDH_to_VH3_map> map_pair = make_pair(inner_vertices, outer_vertices);
+  // Make the pair of maps and export it.
+  CHDH_to_VH3_pair map_pair = make_pair(inner_vertices, outer_vertices);
   return map_pair;
+}
+
+inner_face_and_map make_inner_outer_pair(LCC_CH &chull, Dart_handle_CH &dh_ch_start,
+  LCC_3 &shell, CHDH_to_VH3_pair &map_pair, CHDH_to_VH3_map &glue_vol_map){
+  // Create the vectors containing the darts for each face and the map between them.
+  std::vector<Dart_handle_3> inner_face, outer_face;
+  std::map<Dart_handle_3, Dart_handle_3> inner_outer_map;
+  Vertex_handle_3 inner_vh, outer_vh;
+  Dart_handle_3 inner_dh, outer_dh;
+  Dart_handle_CH dh_ch = dh_ch_start;
+  do {
+    // Get the vertex handles
+    inner_vh = map_pair.first[dh_ch];
+    outer_vh = map_pair.second[dh_ch];
+    // Create the darts, push them into the vectors.
+    inner_dh = shell.create_dart(inner_vh);
+    inner_face.push_back(inner_dh);
+    outer_dh = shell.create_dart(outer_vh);
+    outer_face.push_back(outer_dh);
+    // Add the appropriate entry to glue_vol_map
+    glue_vol_map[chull.beta(dh_ch,0)]=inner_dh;
+    // Update the chull dart
+    dh_ch = chull.beta(dh_ch, 0, 2);
+  } while (dh_ch != dh_ch_start);
+  // We make the association between the darts... Note that scaling the destination
+  // of the inner dart gives the origin of the corresponding outer dart. Sew the
+  // faces together as well.
+  int vertices = inner_face.size();
+  for(int i=0; i<vertices;++i){
+    inner_outer_map[inner_face[i]] = outer_face[positive_modulo(i+1,vertices)];
+    shell.sew<1>(inner_face[i], inner_face[positive_modulo(i+1,vertices)]);
+    shell.sew<1>(outer_face[i], outer_face[positive_modulo(i-1,vertices)]);
+  }
+  inner_face_and_map result = make_pair(inner_face, inner_outer_map);
+  return result;
+}
+
+void make_lateral_and_close(LCC_3 &shell, inner_face_and_map &inner_and_map){
+  std::vector<Dart_handle_3> inner_face = inner_face_and_map.first;
+  std::map<Dart_handle_3, Dart_handle_3> inner_outer_map = inner_face_and_map.second;
+  int vertices = inner_face.size();
+  Dart_handle_3 l1, l2, l3, l4;
+  for(int i=0; i<vertices; i++){
+    l1 = shell.create_dart(shell.vertex_attribute(shell.beta(inner_face[i],1)));
+    l2 = shell.create_dart(shell.vertex_attribute(inner_face[i]));
+    l3 = shell.create_dart(shell.vertex_attribute(shell.beta(inner_outer_map[inner_face[i]],1)));
+    l4 = shell.create_dart(shell.vertex_attribute(inner_outer_map[inner_face[i]]));
+    shell.sew<2>(inner_face[i], l1);
+    shell.sew<2>(inner_outer_map[inner_face[i]],l3);
+    shell.sew<1>(l1,l2);
+    shell.sew<1>(l2,l3);
+    shell.sew<1>(l3,l4);
+    shell.sew<1>(l4,l1);
+  }
+  for(int i=0; i<vertices; i++){
+    l1 = shell.beta(inner_face[i],2,1);
+    l2 = shell.beta(inner_face[i],0,2,0);
+    shell.sew<2>(l1,l2);
+  }
+  return;
+}
+
+void glue_vols(LCC_CH &chull, LCC_3 &shell, CHDH_to_VH3_map &glue_vol_map){
+  Dart_handle_CH dh_ch2;
+  Dart_handle_3 dh_sh1, dh_sh2;
+  for(LCC_CH::One_dart_per_cell_range<1>::iterator
+    dh_ch1=chull.one_dart_per_cell<1>().begin(), itend=chull.one_dart_per_cell<2>().end();
+    dh_ch1!=itend;++dh_ch1){
+      dh_ch2 = chull.beta(dh_ch1,2);
+      dh_sh1 = shell.beta(glue_vol_map[dh_ch1],2);
+      dh_sh2 = shell.beta(glue_vol_map[dh_ch2],2);
+      shell.sew<3>(dh_sh1,dh_sh2);
+  }
+  return;
 }
