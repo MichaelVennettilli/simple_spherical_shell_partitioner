@@ -11,6 +11,7 @@
 #include <vector>
 #include <random>
 #include <math.h>
+#include <cassert>
 //#include <algorithm>
 
 /* // If you want to use exact constructions.
@@ -20,7 +21,7 @@ typedef CGAL::Linear_cell_complex<3,3,
 */
 typedef CGAL::Exact_predicates_inexact_constructions_kernel  K;
 typedef CGAL::Polyhedron_3<K>                     Polyhedron_3;
-typedef K::Point_3                                Poly_Point_3;
+typedef K::Point_3                                Point_3;
 
 typedef CGAL::Linear_cell_complex_for_combinatorial_map<2,3> LCC_CH;
 typedef LCC_CH::Dart_handle           Dart_handle_CH;
@@ -31,17 +32,20 @@ typedef LCC_3::Dart_handle           Dart_handle_3;
 
 int main()
 {
-  double radius = 1.0;
-  int num_pts = 4;
-  std::vector<Poly_Point_3> points = random_spherical_points(num_pts);
+  double r_in = 1.0;
+  double r_out = 2.0;
+  int num_pts = 50;
+  std::vector<Point_3> points = random_spherical_points(num_pts);
   LCC_CH chull = make_chull(points);
-
+  LCC_3 shell = generate_shell(points, r_in, r_out);
+  assert(chull.is_valid());
+  assert(shell.is_valid());
   //print_vertices(chull);
   //LCC_CH::Vertex_attribute_range::iterator it=lcc.vertex_attributes().begin();
-  //std::cout<<"point: "<<lcc.point_of_vertex_attribute(it)<<std::endl;
-  //std::cout<<"point: "<<lcc.point(lcc.dart_of_attribute<0>(it))<<std::endl;
-  //CGAL::draw(chull);
-  LCC_3 shell;
+  chull.display_characteristics(std::cout) << ", valid="
+                                         << chull.is_valid() << std::endl;
+  shell.display_characteristics(std::cout) << ", valid="
+                                         << shell.is_valid() << std::endl;
 
   return EXIT_SUCCESS;
 }

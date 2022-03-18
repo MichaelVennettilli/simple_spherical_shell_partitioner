@@ -20,7 +20,7 @@ typedef CGAL::Linear_cell_complex<3,3,
 */
 typedef CGAL::Exact_predicates_inexact_constructions_kernel  K;
 typedef CGAL::Polyhedron_3<K>                     Polyhedron_3;
-typedef K::Point_3                                Poly_Point_3;
+typedef K::Point_3                                Point_3;
 
 typedef CGAL::Linear_cell_complex_for_combinatorial_map<2,3> LCC_CH;
 typedef LCC_CH::Dart_handle           Dart_handle_CH;
@@ -34,7 +34,10 @@ typedef std::pair<CHDH_to_VH3_map,CHDH_to_VH3_map>   CHDH_to_VH3_pair;
 typedef std::pair<std::vector<Dart_handle_3>, std::map<Dart_handle_3, Dart_handle_3>> inner_face_and_map;
 // typedef LCC_3::Point                 Point_3;
 
-
+/*
+This computes the modulus of i % base but does so such that the result
+is non-negative. This has utility for imposing periodicity in arrays/ vectors.
+*/
 int positive_modulo(int i, int base){
   return (base + (i % base)) % base;
 }
@@ -53,9 +56,25 @@ void print_vertices(LCC_CH &lcc){
   }
 }
 
-std::vector<Poly_Point_3> random_spherical_points(int num_pts){
+/*
+This computes the circumcenter of the face containing the given dart.
+*/
+LCC_3::Point circumcenter(LCC_CH &chull, Dart_handle_CH &dh){
+  LCC_CH::Point a = chull.point(dh);
+  LCC_CH::Point b = chull.point(chull.beta(dh,1));
+  LCC_CH::Point c = chull.point(chull.beta(dh,0));
+  LCC_CH::Vector ba = b-a;
+  LCC_CH::Vector ca = c-a;
+  LCC_CH::Vector X = CGAL::cross_product(ba,ca);
+  LCC_CH::Vector Xba = CGAL::cross_product(X,ba);
+  LCC_CH::Vector Xca = CGAL::cross_product(X,ca);
+  LCC_3::Point cc = a + (Xba*ca.squared_length()-Xca*ba.squared_length())/(2*X.squared_length());
+  return cc;
+}
+
+std::vector<Point_3> random_spherical_points(int num_pts){
   // Create the container of points
-  std::vector<Poly_Point_3> points;
+  std::vector<Point_3> points;
   // Set up the random number generation
   std::mt19937 mt(time(NULL));
   double azi_angle, polar_angle;
@@ -67,13 +86,13 @@ std::vector<Poly_Point_3> random_spherical_points(int num_pts){
 	  // Generate the angles
 	  azi_angle = acos(azimuthal_dist(mt));
 	  polar_angle = polar_dist(mt);
-	  points.push_back(Poly_Point_3(sin(azi_angle)*cos(polar_angle),
+	  points.push_back(Point_3(sin(azi_angle)*cos(polar_angle),
 			  sin(azi_angle)*sin(polar_angle), cos(azi_angle)));
   }
   return points;
 }
 
-LCC_CH make_chull(std::vector<Poly_Point_3> &points){
+LCC_CH make_chull(std::vector<Point_3> &points){
   // Declare the polyhedron and compute the convex hull
   Polyhedron_3 chull_polyhedron;
   CGAL::convex_hull_3(points.begin(), points.end(), chull_polyhedron);
@@ -102,9 +121,12 @@ CHDH_to_VH3_pair make_dual_vertices(LCC_CH &chull,
     it=chull.one_dart_per_cell<2>().begin(), itend=chull.one_dart_per_cell<2>().end();
     it!=itend;++it){
       // Compute the projections of the barycenter onto the inner and outer spheres
-      LCC_CH::Vector bv = chull.barycenter<2>(it) - CGAL::ORIGIN;
-      LCC_3::Point inner_point = CGAL::ORIGIN + (bv * (r_in/std::sqrt(bv.squared_length())));
-      LCC_3::Point outer_point = CGAL::ORIGIN + (bv * (r_out/std::sqrt(bv.squared_length())));
+      // Can use the barycenter of the face
+      //LCC_3::Vector center = chull.barycenter<2>(it) - CGAL::ORIGIN;
+      // or its circumcenter
+      LCC_3::Vector center = circumcenter(chull,it) - CGAL::ORIGIN;
+      LCC_3::Point inner_point = CGAL::ORIGIN + (center * (r_in/std::sqrt(center.squared_length())));
+      LCC_3::Point outer_point = CGAL::ORIGIN + (center * (r_out/std::sqrt(center.squared_length())));
       // Add the points to the vertex container and get their handles.
       Vertex_handle_3 inner_handle = shell.create_vertex_attribute<>(inner_point);
       Vertex_handle_3 outer_handle = shell.create_vertex_attribute<>(outer_point);
@@ -203,7 +225,7 @@ void glue_vols(LCC_CH &chull, LCC_3 &shell, CHDH_to_DH3_map &glue_vol_map){
   return;
 }
 
-LCC_3 generate_shell(std::vector<Poly_Point_3> &points, double r_in, double r_out){
+LCC_3 generate_shell(std::vector<Point_3> &points, double r_in, double r_out){
   LCC_3 shell;
   CHDH_to_DH3_map glue_vol_map;
   LCC_CH chull = make_chull(points);
