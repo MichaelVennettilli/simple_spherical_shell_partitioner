@@ -202,3 +202,21 @@ void glue_vols(LCC_CH &chull, LCC_3 &shell, CHDH_to_DH3_map &glue_vol_map){
   }
   return;
 }
+
+LCC_3 generate_shell(std::vector<Poly_Point_3> &points, double r_in, double r_out){
+  LCC_3 shell;
+  CHDH_to_DH3_map glue_vol_map;
+  LCC_CH chull = make_chull(points);
+  // Make all of the vertices in the shell and get the map relating them to chull darts
+  CHDH_to_VH3_pair chd_to_shv = make_dual_vertices(chull, shell, r_in, r_out);
+  // Iterate over one dart per vertex in chull
+  for(LCC_CH::One_dart_per_cell_range<0>::iterator
+    it=chull.one_dart_per_cell<0>().begin(), itend=chull.one_dart_per_cell<0>().end();
+    it!=itend;++it){
+      inner_face_and_map inner_and_map_pair = make_inner_outer_pair(chull, it, shell,
+        chd_to_shv, glue_vol_map);
+      make_lateral_and_close(shell, inner_and_map_pair);
+    }
+    glue_vols(chull, shell, glue_vol_map);
+    return shell;
+}
