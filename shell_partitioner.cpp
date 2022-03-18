@@ -31,17 +31,17 @@ typedef LCC_3::Dart_handle           Dart_handle_3;
 
 int main()
 {
-  LCC_CH lcc;
   double radius = 1.0;
-  int num_pts = 50;
-  make_chull(lcc, radius, num_pts);
+  int num_pts = 4;
+  std::vector<Poly_Point_3> points = random_spherical_points(num_pts);
+  LCC_CH chull = make_chull(points);
 
-  print_vertices(lcc);
+  //print_vertices(chull);
   //LCC_CH::Vertex_attribute_range::iterator it=lcc.vertex_attributes().begin();
   //std::cout<<"point: "<<lcc.point_of_vertex_attribute(it)<<std::endl;
   //std::cout<<"point: "<<lcc.point(lcc.dart_of_attribute<0>(it))<<std::endl;
-  CGAL::draw(lcc);
-
+  //CGAL::draw(chull);
+  LCC_3 shell;
 
   return EXIT_SUCCESS;
 }
