@@ -8,6 +8,13 @@ This code provides some basic utilities constructing certain geometries in CGAL.
 
 3. It can refine a partition of the spherical shell such that all polyhedra have similar volumes by using a generalization of Lloyd's relaxation algorithm.
 
+## Table of Contents
+
+1. [Generate Shell](#gen_shell)
+2. [Triangulate All Faces](#tri)
+3. [Lloyd Relaxation](#relax)
+
+<a name="gen_shell"></a>
 ## Generate Shell
 
 This code constructs a linear cellular partition of a spherical shell in 3D using combinatorial maps. The basic strategy can be broken down into a sequence of steps.
@@ -61,6 +68,8 @@ Return back to the initial dart d with v as its origin. You can obtain one dart 
 
 12. Unmark everything and free the marks that you have used.
 
+<a name="tri"></a>
 ## Triangulate All Faces
 
+<a name="relax"></a>
 ## Lloyd Relaxation
