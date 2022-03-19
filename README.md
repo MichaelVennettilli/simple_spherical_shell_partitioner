@@ -1,15 +1,23 @@
-# header H1
+# Convex Hull to Spherical Shell
+
+This code provides some basic utilities constructing certain geometries in CGAL. In particular, it was written to do three primary things.
+
+1. Given a positive int (>3), an inner radius, and an outer radius, this can produce a polyhedral partition of the spherical shell bounded by the two radii into the specified number of polyhedra.
+
+2. Given a 3-map, this can triangulate every face in it.
+
+3. It can refine a partition of the spherical shell such that all polyhedra have similar volumes by using a generalization of Lloyd's relaxation algorithm.
+
+## Generate Shell
+
 This code constructs a linear cellular partition of a spherical shell in 3D using combinatorial maps. The basic strategy can be broken down into a sequence of steps.
 
-## header H2
 There is a notion of duality for the convex hull. Each face in the convex hull is dual to a vertex specified by the vertices on the face (I use the circumcenter or the barycenter). Each edge between two faces in the convex hull is dual to an edge connecting the vertices dual to those faces. Each vertex in the convex hull is dual to a face. The vertices of a dual polygon are those dual to the faces in the convex hull incident to the corresponding vertex.
 
-### header H3
 The basic idea is to use extrusion on this dual to obtain the linear cellular partition of the spherical shell. However, this extrusion is done radially, from r_in to r_out. This will stretch each dual polygon and create edges perpendicular to the sphere that are not parallel to each other. Therefore, this requires a modification of the existing approach.
 
 We need the following objects:  
 PARAMETERS  
-# header H12
 -num_vols: Positive integer corresponding to the number of volumes in the partition of the spherical shell.  
 -r_in: Inner radius of the shell. Require r_in > 0.  
 -r_out: Outer radius of the shell. Require r_out > r_in.  
@@ -52,3 +60,7 @@ Return back to the initial dart d with v as its origin. You can obtain one dart 
 11. We can only 3-glue faces once we have created all cells. Once this is done, obtain an iterator of one dart e per edge in the convex hull. You simply 3-sew 3_sew_map(e).Betas[2] and 3_sew_map(e.Betas[2]).Betas[2].
 
 12. Unmark everything and free the marks that you have used.
+
+## Triangulate All Faces
+
+## Lloyd Relaxation
