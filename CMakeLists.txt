@@ -37,6 +37,6 @@ endif()
 # ##########################################################
 
 
-create_single_source_cgal_program( "shell_partitioner.cpp" )
+create_single_source_cgal_program( "main.cpp" )
 
 

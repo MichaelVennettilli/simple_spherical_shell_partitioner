@@ -375,3 +375,60 @@ void triangulate_all_faces(LCC_3 &lcc){
   lcc.free_mark(changed);
   return;
 }
+
+double get_lloyd_scalar(LCC_3 &lcc, Dart_handle_3 dh, int i){
+  LCC_3::Point v0 = lcc.point(dh);
+  LCC_3::Point v1 = lcc.point(lcc.beta(dh,1));
+  LCC_3::Point v2 = lcc.point(lcc.beta(dh,0));
+  double result = (v0[i]+v1[i]+v2[i])*(v0[i]+v1[i]+v2[i])
+    - (v0[i]*v1[i]+v0[i]*v2[i]+v1[i]*v2[i]);
+  return result;
+}
+
+LCC_3::Vector lloyd_single_face(LCC_3 &lcc, Dart_handle_3 dh){
+  LCC_3::Point v0 = lcc.point(dh);
+  LCC_3::Point v1 = lcc.point(lcc.beta(dh,1));
+  LCC_3::Point v2 = lcc.point(lcc.beta(dh,0));
+  LCC_3::Vector X = CGAL::cross_product(v1-v0,v2-v0);
+  double c0 = get_lloyd_scalar(lcc, dh, 0);
+  double c1 = get_lloyd_scalar(lcc, dh, 1);
+  double c2 = get_lloyd_scalar(lcc, dh, 2);
+  LCC_3::Vector contribution = LCC_3::Vector(c0*X[0],c1*X[1],c2*X[2]);
+  return contribution;
+}
+
+std::vector<LCC_CH::Point> get_seeds_lloyd(LCC_3 &lcc){
+  std::vector<LCC_CH::Point> new_seeds;
+  LCC_CH::Point seed;
+  LCC_CH::Vector lloyd_sum;
+  // Iterate over volumes
+  for(LCC_3::One_dart_per_cell_range<3>::iterator
+    vol_it=lcc.one_dart_per_cell<3>().begin(), vol_end=lcc.one_dart_per_cell<3>().end();
+    vol_it!=vol_end;++vol_it){
+      // Reset seed.
+      seed = LCC_CH::Point(0.0,0.0,0.0);
+      lloyd_sum = LCC_CH::Vector(0.0,0.0,0.0);
+      // Iterate over faces
+      for(LCC_3::One_dart_per_incident_cell_range<2,3>::iterator
+        face_it=lcc.one_dart_per_incident_cell<2,3>(vol_it).begin(),
+        face_end=lcc.one_dart_per_incident_cell<2,3>(vol_it).end();
+        face_it!=face_end; ++face_it){
+          lloyd_sum += lloyd_single_face(lcc,face_it);
+        }
+      // Normalize, convert to point, then store.
+      lloyd_sum = lloyd_sum/std::sqrt(lloyd_sum.squared_length());
+      seed = CGAL::ORIGIN + lloyd_sum;
+      new_seeds.push_back(seed);
+    }
+    return new_seeds;
+}
+
+void lloyd_relaxation(LCC_3 &lcc, int num_iter, double r_in, double r_out){
+  std::vector<LCC_CH::Point> seeds;
+  for(int i=0; i<num_iter; ++i){
+    triangulate_all_faces(lcc);
+    seeds = get_seeds_lloyd(lcc);
+    lcc = generate_shell(seeds, r_in, r_out);
+  }
+  return;
+}
