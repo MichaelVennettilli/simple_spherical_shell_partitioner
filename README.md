@@ -1,11 +1,15 @@
+# header H1
 This code constructs a linear cellular partition of a spherical shell in 3D using combinatorial maps. The basic strategy can be broken down into a sequence of steps.
 
+## header H2
 There is a notion of duality for the convex hull. Each face in the convex hull is dual to a vertex specified by the vertices on the face (I use the circumcenter or the barycenter). Each edge between two faces in the convex hull is dual to an edge connecting the vertices dual to those faces. Each vertex in the convex hull is dual to a face. The vertices of a dual polygon are those dual to the faces in the convex hull incident to the corresponding vertex.
 
+### header H3
 The basic idea is to use extrusion on this dual to obtain the linear cellular partition of the spherical shell. However, this extrusion is done radially, from r_in to r_out. This will stretch each dual polygon and create edges perpendicular to the sphere that are not parallel to each other. Therefore, this requires a modification of the existing approach.
 
 We need the following objects:  
 PARAMETERS  
+# header H12
 -num_vols: Positive integer corresponding to the number of volumes in the partition of the spherical shell.  
 -r_in: Inner radius of the shell. Require r_in > 0.  
 -r_out: Outer radius of the shell. Require r_out > r_in.  
