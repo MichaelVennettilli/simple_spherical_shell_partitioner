@@ -376,7 +376,17 @@ void triangulate_all_faces(LCC_3 &lcc){
   return;
 }
 
+/*
+I generalize Lloyd relaxation by using the normalized center of mass of a
+volume in the shell to create a new point when recalculating the convex hull.
+To compute the center of mass, you convert the volume integral into a surface
+integral using the divergence theorem. For each triangular face, you compute a
+diagonal matrix and multiply the outer normal by it. The center of mass of the
+volume is proportional to the sum of the contributions per incident face. This
+function computes the entries in the diagonal matrix
+*/
 double get_lloyd_scalar(LCC_3 &lcc, Dart_handle_3 dh, int i){
+  // Get the ordered points, then compute the result.
   LCC_3::Point v0 = lcc.point(dh);
   LCC_3::Point v1 = lcc.point(lcc.beta(dh,1));
   LCC_3::Point v2 = lcc.point(lcc.beta(dh,0));
@@ -385,11 +395,18 @@ double get_lloyd_scalar(LCC_3 &lcc, Dart_handle_3 dh, int i){
   return result;
 }
 
+/*
+Given a dart on a face incident to a volume, this computes the diagonal matrix
+and the outer normal, multiplies them together and returns the result.
+*/
 LCC_3::Vector lloyd_single_face(LCC_3 &lcc, Dart_handle_3 dh){
+  // Get the points and compute the outer normal.
   LCC_3::Point v0 = lcc.point(dh);
   LCC_3::Point v1 = lcc.point(lcc.beta(dh,1));
   LCC_3::Point v2 = lcc.point(lcc.beta(dh,0));
   LCC_3::Vector X = CGAL::cross_product(v1-v0,v2-v0);
+  // Get the components of the diagonal matrix and multiply the outer normal
+  // by it. Return the resulting contribution.
   double c0 = get_lloyd_scalar(lcc, dh, 0);
   double c1 = get_lloyd_scalar(lcc, dh, 1);
   double c2 = get_lloyd_scalar(lcc, dh, 2);
@@ -397,7 +414,13 @@ LCC_3::Vector lloyd_single_face(LCC_3 &lcc, Dart_handle_3 dh){
   return contribution;
 }
 
+/*
+This method iterates over each volume in a 3-map and then over each face incident
+to that volume. It computes the sum of the contributions from each face, normalizes
+the result, then appends it to the vector of seeds for computing the convex hull.
+*/
 std::vector<LCC_CH::Point> get_seeds_lloyd(LCC_3 &lcc){
+  // Declarations
   std::vector<LCC_CH::Point> new_seeds;
   LCC_CH::Point seed;
   LCC_CH::Vector lloyd_sum;
@@ -405,7 +428,7 @@ std::vector<LCC_CH::Point> get_seeds_lloyd(LCC_3 &lcc){
   for(LCC_3::One_dart_per_cell_range<3>::iterator
     vol_it=lcc.one_dart_per_cell<3>().begin(), vol_end=lcc.one_dart_per_cell<3>().end();
     vol_it!=vol_end;++vol_it){
-      // Reset seed.
+      // Reset the current seed and the sum.
       seed = LCC_CH::Point(0.0,0.0,0.0);
       lloyd_sum = LCC_CH::Vector(0.0,0.0,0.0);
       // Iterate over faces
@@ -413,9 +436,10 @@ std::vector<LCC_CH::Point> get_seeds_lloyd(LCC_3 &lcc){
         face_it=lcc.one_dart_per_incident_cell<2,3>(vol_it).begin(),
         face_end=lcc.one_dart_per_incident_cell<2,3>(vol_it).end();
         face_it!=face_end; ++face_it){
+          // Add the contribution from each face to the running sum
           lloyd_sum += lloyd_single_face(lcc,face_it);
         }
-      // Normalize, convert to point, then store.
+      // Normalize the sum, convert it to a point, then store it.
       lloyd_sum = lloyd_sum/std::sqrt(lloyd_sum.squared_length());
       seed = CGAL::ORIGIN + lloyd_sum;
       new_seeds.push_back(seed);
@@ -423,6 +447,10 @@ std::vector<LCC_CH::Point> get_seeds_lloyd(LCC_3 &lcc){
     return new_seeds;
 }
 
+/*
+This method recomputes the LCC_3 using Lloyd relaxation for a specified
+number of iterations.
+*/
 void lloyd_relaxation(LCC_3 &lcc, int num_iter, double r_in, double r_out){
   std::vector<LCC_CH::Point> seeds;
   for(int i=0; i<num_iter; ++i){

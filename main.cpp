@@ -40,9 +40,14 @@ int main()
   LCC_3 shell = generate_shell(points, r_in, r_out);
   LCC_3 relaxed = shell;
   lloyd_relaxation(relaxed, 10, r_in, r_out);
-  CGAL::draw(relaxed);
-  lloyd_relaxation(relaxed, 100, r_in, r_out);
-  CGAL::draw(relaxed);
-
+  std::cout<<"Convex hull :"<<std::endl<<"  ";
+  chull.display_characteristics(std::cout) << ", valid="
+                                         << chull.is_valid() << std::endl;
+  std::cout<<"Shell :"<<std::endl<<"  ";
+  shell.display_characteristics(std::cout) << ", valid="
+                                         << shell.is_valid() << std::endl;
+  std::cout<<"Relaxed :"<<std::endl<<"  ";
+  relaxed.display_characteristics(std::cout) << ", valid="
+                                         << relaxed.is_valid() << std::endl;
   return EXIT_SUCCESS;
 }
