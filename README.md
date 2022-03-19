@@ -2,7 +2,7 @@
 
 This code provides some basic utilities constructing certain geometries in CGAL. In particular, it was written to do three primary things.
 
-1. Given a positive int (>3), an inner radius, and an outer radius, this can produce a polyhedral partition of the spherical shell bounded by the two radii into the specified number of polyhedra.
+1. Given a set of points (>3), an inner radius, and an outer radius, this can produce a polyhedral partition of the spherical shell bounded by the two radii into the specified number of polyhedra.
 
 2. Given a 3-map, this can triangulate every face in it.
 
@@ -19,10 +19,15 @@ This code provides some basic utilities constructing certain geometries in CGAL.
 
 This code constructs a linear cellular partition of a spherical shell in 3D using combinatorial maps. The basic strategy can be broken down into a sequence of steps.
 
-There is a notion of duality for the convex hull. Each face in the convex hull is dual to a vertex specified by the vertices on the face (I use the circumcenter or the barycenter). Each edge between two faces in the convex hull is dual to an edge connecting the vertices dual to those faces. Each vertex in the convex hull is dual to a face. The vertices of a dual polygon are those dual to the faces in the convex hull incident to the corresponding vertex.
+There is a notion of duality for the convex hull. Each face in the convex hull is dual to a vertex specified by the vertices on the face (I use the circumcenter). Each edge between two faces in the convex hull is dual to an edge connecting the vertices dual to those faces. Each vertex in the convex hull is dual to a face. The vertices of a dual polygon are those dual to the faces in the convex hull incident to the corresponding vertex.
 
-The basic idea is to use extrusion on this dual to obtain the linear cellular partition of the spherical shell. However, this extrusion is done radially, from r_in to r_out. This will stretch each dual polygon and create edges perpendicular to the sphere that are not parallel to each other. Therefore, this requires a modification of the existing approach.
+The basic idea is to use extrusion on this dual to obtain the linear cellular partition of the spherical shell. However, this extrusion is done radially, from an inner radius to an outer one. This will stretch each dual polygon and create edges perpendicular to the sphere that are not parallel to each other. Therefore, this requires a modification of the existing approach. To use this, you need to provide a set of points, an inner radius r_in, and an outer radius r_out. I generate the points randomly, so this requires an int for the number of points. Using this is as simple as
+```
+std::vector<Point_3> points = random_spherical_points(num_pts);  
+CGAL::Linear_cell_complex_for_combinatorial_map<3> shell = generate_shell(points, r_in, r_out);  
+```
 
+### Implementation Details
 We need the following objects:  
 PARAMETERS  
 -num_vols: Positive integer corresponding to the number of volumes in the partition of the spherical shell.  
@@ -71,5 +76,9 @@ Return back to the initial dart d with v as its origin. You can obtain one dart 
 <a name="tri"></a>
 ## Triangulate All Faces
 
+### Implementation Details
+
 <a name="relax"></a>
 ## Lloyd Relaxation
+
+### Implementation Details
