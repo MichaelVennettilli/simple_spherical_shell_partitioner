@@ -30,11 +30,21 @@ typedef CGAL::Linear_cell_complex_for_combinatorial_map<3> LCC_3;
 typedef LCC_3::Dart_handle           Dart_handle_3;
 // typedef LCC_3::Point                 Point_3;
 
-int main()
+int main(int argc, char* argv[])
 {
   double r_in = 1.0;
   double r_out = 2.0;
   int num_pts = 50;
+  if (argc>1){
+    num_pts = std::atoi(argv[1]);
+  }
+  if (argc>2){
+		r_in = std::atof(argv[2]);
+	}
+	if (argc>3){
+		r_out = std::atof(argv[3]);
+	}
+
   std::vector<Point_3> points = random_spherical_points(num_pts);
   LCC_CH chull = make_chull(points);
   LCC_3 shell = generate_shell(points, r_in, r_out);
@@ -49,5 +59,8 @@ int main()
   std::cout<<"Relaxed :"<<std::endl<<"  ";
   relaxed.display_characteristics(std::cout) << ", valid="
                                          << relaxed.is_valid() << std::endl;
+  CGAL::draw(chull);
+  CGAL::draw(shell);
+  CGAL::draw(relaxed);
   return EXIT_SUCCESS;
 }
