@@ -71,6 +71,10 @@ ASSOCIATIVE MAPS/ ARRAYS
 <a name="tri"></a>
 ## Triangulate All Faces
 
+This code is pretty self-explanatory. It inserts the circumcenter into each face and triangulates it. This is not possible with the default iterators in the naive way. One problem is that subdividing a face adds more faces, so you never reach the end. Using a for loop to store the values of the iterator, then looping over them also doesn't work.
+
+Here, we have to get our hands a bit more dirty and use marks. Reserve a mark ma. Insertion always returns a handle for a dart incident to the new vertex. Loop over all darts until you reach lcc.darts().end(), which should be recomputed after insertion. Insert the circumcenter and store the handle dh_start. Create a new handle dh and set dh <-- dh_start. Apply Betas[1] and ma-mark all darts in this face, this is just dh, dh.Betas[0], and dh.Betas[1], since we've triangulated things. Go to the next face with dh <-- dh.Betas[2].Betas[1], and repeat until you reach a face that is ma-marked (the one corresponding to dh_start). Now we need to check if the face is 3-sewn. If it isn't, we are done. If it is, get another dart incident to the new vertex with dh <-- dh_start.Betas[3].Betas[1]. Repeat the above to mark all darts in this face. Move on to the next dart in the list of all darts and repeat the above if it is not ma-marked. Once you reach lcc.darts().end(), you are done. Un-ma-mark everything and free the mark, and you're done.
+
 ### Implementation Details
 
 <a name="relax"></a>
