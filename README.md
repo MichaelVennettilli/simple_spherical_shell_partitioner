@@ -96,9 +96,17 @@ We compute the center of mass $\vec{c}$ (up to a constant factor) of a finite vo
 ```math
 V\vec{c} = \int_V \vec{x}dV.
 ```
-We can apply the inner product with any $\vec{\tau}$ and use the divergence theorem. Introducing the matrix $M(\vec{x}) = \text{diag}(x_i^2)$, we have
+We can apply the inner product with any $\vec{\tau}$ and use the divergence theorem. The key is to notice that
 ```math
-V\vec{c} = \int_V \tau\cdot \vec{x} dV = \frac{\vec{\tau}}{2} \cdot \oint_{\partial V} M(\vec{x})d\vec{S}.
+\nabla \cdot \langle \tau_1 x_1^2, \tau_2 x_2^2, \tau_3 x_3^2\rangle = 2 \vec{\tau} \cdot \vec{x}.
+```
+It will be convenient to introduce the matrix $`M(\vec{x}) = \text{diag}(x_i^2)`$, then
+```math
+\nabla \cdot \left(\frac{1}{2}M(\vec{x})\vec{\tau} \right) = \vec{\tau} \cdot \vec{x}.
+```
+Using the divergence theorem and using the fact that $`M`$ is symmetric gives
+```math
+V\vec{c} = \frac{\vec{\tau}}{2} \cdot \oint_{\partial V} M(\vec{x})d\vec{S}.
 ```
 
 ### Implementation Details
