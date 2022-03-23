@@ -105,13 +105,18 @@ Introduce the matrix $`M(\vec{x}) = \text{diag}(x_i^2)`$, use the divergence the
 V\vec{c} = \frac{\vec{1}}{2} \oint_{\partial V} M(\vec{x})d\vec{S}.
 ```
 
-Now we use the fact that our surface is triangulated. For each face, get one dart $`d`$ incident to it. Let $`Org`$ denote the function that gets the origin of a dart. Any point on the triangle can be obtained with
+Now we use the fact that our surface is triangulated. For each face, get one dart $`d`$ incident to it. Let $`Org`$ denote the function that gets the origin of a dart. We introduce
 ```math
-\vec{x} = (1-s-t)\cdot Org(d) + s\cdot Org(\beta_1(d)) + t\cdot Org(\beta_0(d))
+\vec{v}_0 = Org(d), \qquad \vec{v}_1 = Org(\beta_1(d)), \qquad \vec{v}_{-1} = Org(\beta_0(d)).
+```
+Any point on the triangle can be written
+```math
+\vec{x} = (1-s-t) \vec{v}_0 + s\vec{v}_1 + t \vec{v}_{-1}
 ```
 for $`s,t \geq 0`$ and $`s+t \leq 1`$. Given that our faces are counterclockwise when viewed from the (immediate) outside, the area element is
 ```math
-d\vec{S} = \frac{1}{2} \frac{partial \vec{x}}{\partial s} \times \frac{partial \vec{x}}{\partial t} ds dt= \frac{1}{2} (Org(\beta_1(d))-Org(d))\times(Org(\beta_0(d))-Org(d))ds dt.
+d\vec{S} = \frac{1}{2} \frac{\partial \vec{x}}{\partial s} \times \frac{\partial \vec{x}}{\partial t} ds dt= \frac{1}{2} (\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0)ds dt.
 ```
+
 
 ### Implementation Details
