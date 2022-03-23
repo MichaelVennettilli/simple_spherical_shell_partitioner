@@ -257,18 +257,18 @@ them together.
 */
 void glue_vols(LCC_CH &chull, LCC_3 &shell, CHDH_to_DH3_map &glue_vol_map){
   // Declare some handles for convenience.
-  Dart_handle_CH dh_ch2;
+  Dart_handle_CH it_twin;
   Dart_handle_3 dh_sh1, dh_sh2;
   // Iterate over one dart per edge in the convex hull.
   for(LCC_CH::One_dart_per_cell_range<1>::iterator
-    dh_ch1=chull.one_dart_per_cell<1>().begin(), itend=chull.one_dart_per_cell<1>().end();
-    dh_ch1!=itend;++dh_ch1){
+    it=chull.one_dart_per_cell<1>().begin(), itend=chull.one_dart_per_cell<1>().end();
+    it!=itend;++it){
       // Get the other dart corresponding to the edge in the convex hull.
-      dh_ch2 = chull.beta(dh_ch1,2);
+      it_twin = chull.beta(it,2);
       // The glue_vol_map maps edges onto inner darts. To get the lateral
       // darts, you need to use beta_2.
-      dh_sh1 = shell.beta(glue_vol_map[dh_ch1],2);
-      dh_sh2 = shell.beta(glue_vol_map[dh_ch2],2);
+      dh_sh1 = shell.beta(glue_vol_map[it],2);
+      dh_sh2 = shell.beta(glue_vol_map[it_twin],2);
       // 3-sew the darts together.
       shell.sew<3>(dh_sh1,dh_sh2);
   }

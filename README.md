@@ -75,9 +75,19 @@ This code is pretty self-explanatory. It inserts the circumcenter into each face
 
 Here, we have to get our hands a bit more dirty and use marks. Reserve a mark ma. Insertion always returns a handle for a dart incident to the new vertex. Loop over all darts until you reach lcc.darts().end(), which should be recomputed after insertion. Insert the circumcenter and store the handle dh_start. Create a new handle dh and set dh <-- dh_start. Apply Betas[1] and ma-mark all darts in this face, this is just dh, dh.Betas[0], and dh.Betas[1], since we've triangulated things. Go to the next face with dh <-- dh.Betas[2].Betas[1], and repeat until you reach a face that is ma-marked (the one corresponding to dh_start). Now we need to check if the face is 3-sewn. If it isn't, we are done. If it is, get another dart incident to the new vertex with dh <-- dh_start.Betas[3].Betas[1]. Repeat the above to mark all darts in this face. Move on to the next dart in the list of all darts and repeat the above if it is not ma-marked. Once you reach lcc.darts().end(), you are done. Un-ma-mark everything and free the mark, and you're done.
 
-### Implementation Details
+The function doesn't return anything, the linear cell complex lcc of dimension 3 is passed by reference, so you just use
+```
+CGAL::Linear_cell_complex_for_combinatorial_map<3> lcc = ...
+triangulate_all_faces(lcc);
+```
 
 <a name="relax"></a>
 ## Lloyd Relaxation
+
+This function employs a generalization of Lloyd's relaxation method. If we construct cells using randomly sampled points, they can have wildly unequal volumes. This occurs if some of the randomly sampled points are close together. We use the computed partition of the shell to refine it. You specify a number of iterations and the inner and outer radii  pass a 3-map lcc by reference. Applying this can be done with
+```
+CGAL::Linear_cell_complex_for_combinatorial_map<3> lcc = ...
+lloyd_relaxation(lcc, num_iter, r_in, r_out);
+```
 
 ### Implementation Details
