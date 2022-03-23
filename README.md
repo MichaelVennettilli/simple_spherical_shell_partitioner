@@ -93,7 +93,7 @@ lloyd_relaxation(lcc, num_iter, r_in, r_out);
 yoyo
 
 ```math
-E \napprox m c^2
+E \not\approx m c^2
 ```
 
 ### Implementation Details
