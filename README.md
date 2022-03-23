@@ -92,7 +92,7 @@ lloyd_relaxation(lcc, num_iter, r_in, r_out);
 
 ### Mathematical Details
 
-We compute the center of mass $\vec{c}$ (up to a constant factor) of a finite volume bounded by a triangulated surface. We have
+We compute the center of mass $`\vec{c}`$ (up to a constant factor) of a finite volume bounded by a triangulated surface. We have
 ```math
 V\vec{c} = \int_V \vec{x}dV.
 ```
@@ -100,13 +100,18 @@ We can apply the inner product with any $\vec{\tau}$ and use the divergence theo
 ```math
 \nabla \cdot \langle \tau_1 x_1^2, \tau_2 x_2^2, \tau_3 x_3^2\rangle = 2 \vec{\tau} \cdot \vec{x}.
 ```
-It will be convenient to introduce the matrix $`M(\vec{x}) = \text{diag}(x_i^2)`$, then
+Introduce the matrix $`M(\vec{x}) = \text{diag}(x_i^2)`$, use the divergence theorem, the fact that $`M(\vec{x})`$ is symmetric to find, and finally the fact that $`\vec{\tau}`$ was arbitrary to find
 ```math
-\nabla \cdot \left(\frac{1}{2}M(\vec{x})\vec{\tau} \right) = \vec{\tau} \cdot \vec{x}.
+V\vec{c} = \frac{\vec{1}}{2} \oint_{\partial V} M(\vec{x})d\vec{S}.
 ```
-Using the divergence theorem and using the fact that $`M`$ is symmetric gives
+
+Now we use the fact that our surface is triangulated. For each face, get one dart $`d`$ incident to it. Let $`Org`$ denote the function that gets the origin of a dart. Any point on the triangle can be obtained with
 ```math
-V\vec{c} = \frac{\vec{\tau}}{2} \cdot \oint_{\partial V} M(\vec{x})d\vec{S}.
+\vec{x} = (1-s-t)\cdot Org(d) + s\cdot Org(\beta_1(d)) + t\cdot Org(\beta_0(d))
+```
+for $`s,t \geq 0`$ and $`s+t \leq 1`$. Given that our faces are counterclockwise when viewed from the (immediate) outside, the area element is
+```math
+d\vec{S} = \frac{1}{2} \frac{partial \vec{x}}{\partial s} \times \frac{partial \vec{x}}{\partial t} ds dt= \frac{1}{2} (Org(\beta_1(d))-Org(d))\times(Org(\beta_0(d))-Org(d))ds dt.
 ```
 
 ### Implementation Details
