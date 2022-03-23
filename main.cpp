@@ -48,6 +48,8 @@ int main(int argc, char* argv[])
   std::vector<Point_3> points = random_spherical_points(num_pts);
   LCC_CH chull = make_chull(points);
   LCC_3 shell = generate_shell(points, r_in, r_out);
+  LCC_3 tri = shell;
+  triangulate_all_faces(tri);
   LCC_3 relaxed = shell;
   lloyd_relaxation(relaxed, 10, r_in, r_out);
   std::cout<<"Convex hull :"<<std::endl<<"  ";
@@ -61,6 +63,7 @@ int main(int argc, char* argv[])
                                          << relaxed.is_valid() << std::endl;
   CGAL::draw(chull);
   CGAL::draw(shell);
+  CGAL::draw(tri);
   CGAL::draw(relaxed);
   return EXIT_SUCCESS;
 }
