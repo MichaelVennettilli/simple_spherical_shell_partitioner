@@ -90,10 +90,15 @@ CGAL::Linear_cell_complex_for_combinatorial_map<3> lcc = ...
 lloyd_relaxation(lcc, num_iter, r_in, r_out);
 ```
 
-yoyo
+### Mathematical Details
 
+We compute the center of mass $\vec{c}$ (up to a constant factor) of a finite volume bounded by a triangulated surface. We have
 ```math
-E \not\approx m c^2
+V\vec{c} = \int_V \vec{x}dV.
+```
+We can apply the inner product with any $\vec{\tau}$ and use the divergence theorem. Introducing the matrix $M(\vec{x}) = \text{diag}(x_i^2)$, we have
+```math
+V\vec{c} = \int_V \tau\cdot \vec{x} dV = \frac{\vec{\tau}}{2} \cdot \oint_{\partial V} M(\vec{x})d\vec{S}.
 ```
 
 ### Implementation Details
