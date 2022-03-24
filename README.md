@@ -134,7 +134,7 @@ The result of the integral of the matrix above is the matrix $`J(F) = \frac{1}{1
 ```math
 \vec{c} \propto \sum\limits_{\text{faces } F} \text{diag}(c_{i}(F))\left[(\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0)\right].
 ```
-Summarizing, you apply a diagonal matrix to each area element and sum them for each face on the volume. We use the vector $`\vec{c}/||\vec{c}||`$ to seed a cell in Lloyd's algorithm, so the (postitive) constant of proportionality ($`1/48V`$) is irrelevant.
+Summarizing, you apply a diagonal matrix to each area $test$element$$test2$$ and sum them for each face on the volume. We use the vector $`\vec{c}/||\vec{c}||`$ to seed a cell in Lloyd's algorithm, so the (postitive) constant of proportionality ($`1/48V`$) is irrelevant.
 
 ### Implementation Details
 
