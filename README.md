@@ -96,16 +96,21 @@ We compute the center of mass $`\vec{c}`$ (up to a constant factor) of a finite 
 ```math
 V\vec{c} = \int_V \vec{x}dV.
 ```
-We can apply the inner product with any $\vec{\tau}$ and use the divergence theorem. The key is to notice that
+We can apply the inner product with any $`\vec{\tau}`$ and use the divergence theorem. The key is to notice that
 ```math
 \nabla \cdot \langle \tau_1 x_1^2, \tau_2 x_2^2, \tau_3 x_3^2\rangle = 2 \vec{\tau} \cdot \vec{x}.
 ```
 Introduce the matrix $`M(\vec{x}) = \text{diag}(x_i^2)`$, use the divergence theorem, the fact that $`M(\vec{x})`$ is symmetric to find, and finally the fact that $`\vec{\tau}`$ was arbitrary to find
 ```math
-V\vec{c} = \frac{\vec{1}}{2} \oint_{\partial V} M(\vec{x})d\vec{S}.
+V\vec{c} = \frac{1}{2} \oint_{\partial V} M(\vec{x})d\vec{S},
 ```
+where $`d\vec{S}`$ points in the direction of the outward normal.
 
-Now we use the fact that our surface is triangulated. For each face, get one dart $`d`$ incident to it. Let $`Org`$ denote the function that gets the origin of a dart. We introduce
+Now we use the fact that our surface is triangulated. We break the integral up into a sum over faces
+```math
+V\vec{c} = \frac{1}{2} \sum\limits_{\text{faces }F} \oint_{F} M(\vec{x})d\vec{S},
+```
+For each face $`F`$, get one dart $`d`$ incident to it. Let $`Org`$ denote the function that gets the origin of a dart. We introduce
 ```math
 \vec{v}_0 = Org(d), \qquad \vec{v}_1 = Org(\beta_1(d)), \qquad \vec{v}_{-1} = Org(\beta_0(d)).
 ```
