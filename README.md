@@ -136,8 +136,6 @@ The result of the integral of the matrix above is the matrix $`J(F) = \frac{1}{1
 ```
 Summarizing, you apply a diagonal matrix to each area element and sum them for each face on the volume. We use the vector $`\vec{c}/||\vec{c}||`$ to seed a cell in Lloyd's algorithm, so the (postitive) constant of proportionality ($`1/48V`$) is irrelevant.
 
-\alpha
-
 ### Implementation Details
 
 We need the following objects:  
