@@ -1,6 +1,6 @@
 # Convex Hull to Spherical Shell
 
-This code provides some basic utilities constructing certain geometries in CGAL. In particular, it was written to do three primary things.
+This code provides some basic utilities constructing a specific geometries in CGAL. In particular, it was written to do three primary things.
 
 1. Given a set of points (>3), an inner radius, and an outer radius, this can produce a polyhedral partition of the spherical shell bounded by the two radii into the specified number of polyhedra.
 
@@ -8,7 +8,7 @@ This code provides some basic utilities constructing certain geometries in CGAL.
 
 3. It can refine a partition of the spherical shell such that all polyhedra have similar volumes by using a generalization of Lloyd's relaxation algorithm.
 
-This was tested on CGAL version 5.3.1, but it should work on more recent versions. I will test this directly later.
+This was tested on CGAL version 5.3.1, but it should work on more recent versions. I will test this directly later. This also only works for the default Linear_cell_complex_for_combinatorial_map options. This currently doesn't support custom Info_, OnMerge or OnSplit functors, and Tags. These will be added later.
 
 ## Table of Contents
 
