@@ -130,9 +130,9 @@ It will be convenient to introduce the scalars
 ```math
 c_i(F) = \frac{1}{12}\left[(v_{0,i} + v_{1,i} + v_{-1,i})^2 -(v_{0,i}v_{1,i} + v_{0,i}v_{-1,i} + v_{1,i}v_{-1,i})\right]
 ```
-The result of the integral of the matrix above is the matrix $`J(F) = \frac{1}{12} \text{diag(c_i)}`$. Putting everything together and dropping overall constants, we see that
+The result of the integral of the matrix above is the matrix $`J(F) = \frac{1}{12} \text{diag}(c_i)`$. Putting everything together and dropping overall constants, we see that
 ```math
-\vec{c} \propto \sum\limits_{\text{faces F}} diag(c_{i}(F))\left[(\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0)\right].
+\vec{c} \propto \sum\limits_{\text{faces F}} \text{diag}(c_{i}(F))\left[(\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0)\right].
 ```
 Summarizing, you apply a diagonal matrix to each area element and sum them for each face on the area. We use the vector $`\vec{c}/||\vec{c}||`$ to seed a cell in Lloyd's algorithm, so the (postitive) constant of proportionality is irrelevant.
 
