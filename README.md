@@ -122,6 +122,11 @@ for $`s,t \geq 0`$ and $`s+t \leq 1`$. Given that our faces are counterclockwise
 ```math
 d\vec{S} = \frac{1}{2} \frac{\partial \vec{x}}{\partial s} \times \frac{\partial \vec{x}}{\partial t} ds dt= \frac{1}{2} (\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0)ds dt.
 ```
+Since the normal for a face is constant along it, we have
+```math
+V\vec{c} = \frac{1}{4} \sum\limits_{\text{faces }F} \left(\int_{0}^{1}dt \int_{0}^{1-t} M((1-s-t) \vec{v}_0 + s\vec{v}_1 + t \vec{v}_{-1})ds\right)(\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0),
+
+```
 
 
 ### Implementation Details
