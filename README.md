@@ -124,9 +124,16 @@ d\vec{S} = \frac{1}{2} \frac{\partial \vec{x}}{\partial s} \times \frac{\partial
 ```
 Since the normal for a face is constant along it, we have
 ```math
-V\vec{c} = \frac{1}{4} \sum\limits_{\text{faces }F} \left(\int_{0}^{1}dt \int_{0}^{1-t} M((1-s-t) \vec{v}_0 + s\vec{v}_1 + t \vec{v}_{-1})ds\right)(\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0),
-
+V\vec{c} = \frac{1}{4} \sum\limits_{\text{faces }F} \left(\int_{0}^{1}dt \int_{0}^{1-t} M((1-s-t) \vec{v}_0 + s\vec{v}_1 + t \vec{v}_{-1})ds\right)\left[(\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0)\right].
 ```
-
+It will be convenient to introduce the scalars
+```math
+c_i(F) = \frac{1}{12}\left[(v_{0,i} + v_{1,i} + v_{-1,i})^2 -(v_{0,i}v_{1,i} + v_{0,i}v_{-1,i} + v_{1,i}v_{-1,i})\right]
+```
+The result of the integral of the matrix above is the matrix $`J(F) = \frac{1}{12} \text{diag(c_i)}`$. Putting everything together and dropping overall constants, we see that
+```math
+\vec{c} \propto \sum\limits_{\text{faces F}} diag(c_{i}(F))\left[(\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0)\right].
+```
+Summarizing, you apply a diagonal matrix to each area element and sum them for each face on the area. We use the vector $`\vec{c}/||\vec{c}||`$ to seed a cell in Lloyd's algorithm, so the (postitive) constant of proportionality is irrelevant.
 
 ### Implementation Details
