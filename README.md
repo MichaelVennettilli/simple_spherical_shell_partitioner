@@ -44,7 +44,7 @@ ASSOCIATIVE MAPS/ ARRAYS
 -chull_to_inner_vertex: A map from darts of chull_map to vertex handles of shell, particularly to inner vertices. The vertex is at the circumcenter of the corresponding face scaled to r_in.  
 -chull_to_outer_vertex: A map from darts of chull_map to vertex handles of shell, particularly to outer vertices. The vertex is at the circumcenter of the corresponding face scaled to r_out.  
 -3_sew_dict: A map from darts in chull_map to darts in shell informing how to 3-sew adjacent volumes.  
--inner_to_outer: A map from inner darts to their corresponding outer darts.  
+-inner_to_outer: A map from inner darts to their corresponding outer darts. and an inner and outer radius  
 
 1. Randomly sample num_pts points on a sphere with radius 1.
 
@@ -132,8 +132,17 @@ c_i(F) = \frac{1}{12}\left[(v_{0,i} + v_{1,i} + v_{-1,i})^2 -(v_{0,i}v_{1,i} + v
 ```
 The result of the integral of the matrix above is the matrix $`J(F) = \frac{1}{12} \text{diag}(c_i)`$. Putting everything together and dropping overall constants, we see that
 ```math
-\vec{c} \propto \sum\limits_{\text{faces F}} \text{diag}(c_{i}(F))\left[(\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0)\right].
+\vec{c} \propto \sum\limits_{\text{faces } F} \text{diag}(c_{i}(F))\left[(\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0)\right].
 ```
-Summarizing, you apply a diagonal matrix to each area element and sum them for each face on the area. We use the vector $`\vec{c}/||\vec{c}||`$ to seed a cell in Lloyd's algorithm, so the (postitive) constant of proportionality is irrelevant.
+Summarizing, you apply a diagonal matrix to each area element and sum them for each face on the volume. We use the vector $`\vec{c}/||\vec{c}||`$ to seed a cell in Lloyd's algorithm, so the (postitive) constant of proportionality ($`1/48V`$) is irrelevant.
 
 ### Implementation Details
+
+We need the following objects:  
+PARAMETERS  
+-num_iter: Number of iterations of Lloyd's algorithm.  
+-r_in: Inner radius of the shell. Require r_in > 0.  
+-r_out: Outer radius of the shell. Require r_out > r_in.  
+-lcc: Input 3-dimensional linear cell complex.
+
+Implementing this closely follows the computation above. Given a 3-dimensional linear cell complex, we first triangulate all of its faces. We obtain an iterator of one dart per volume. Given a dart belonging to a volume, we get one dart per face incident to that volume. We compute the scalars $`c_{i}(F)`$ and the area element $`(\vec{v}_1-\vec{v}_0)\times(\vec{v}_{-1}-\vec{v}_0)`$. We perform the multiplication for each face, sum the contributions, add $`\vec{c}/||\vec{c}||`$ to a list of new seeds, and move on. We then recompute the convex hull using the new seeds and use that to recompute the cellular partition of the spherical shell. This is done for a specified number of iterations.
