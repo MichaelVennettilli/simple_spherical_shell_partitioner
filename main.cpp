@@ -12,23 +12,16 @@
 #include <random>
 #include <math.h>
 #include <cassert>
-//#include <algorithm>
 
-/* // If you want to use exact constructions.
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-typedef CGAL::Linear_cell_complex<3,3,
-  CGAL::Linear_cell_complex_traits<3, CGAL::Exact_predicates_exact_constructions_kernel> > LCC_CH;
-*/
 typedef CGAL::Exact_predicates_inexact_constructions_kernel  K;
 typedef CGAL::Polyhedron_3<K>                     Polyhedron_3;
 typedef K::Point_3                                Point_3;
 
 typedef CGAL::Linear_cell_complex_for_combinatorial_map<2,3> LCC_CH;
 typedef LCC_CH::Dart_handle           Dart_handle_CH;
-// typedef LCC_CH::Point                 Point_CH;
+
 typedef CGAL::Linear_cell_complex_for_combinatorial_map<3> LCC_3;
 typedef LCC_3::Dart_handle           Dart_handle_3;
-// typedef LCC_3::Point                 Point_3;
 
 int main(int argc, char* argv[])
 {
