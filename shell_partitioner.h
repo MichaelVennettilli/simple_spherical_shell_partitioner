@@ -36,6 +36,9 @@ SOFTWARE.
 #include <map>
 #include <utility>
 
+#ifndef SHELL_PARTITIONER_H
+#define SHELL_PARTITIONER_H
+
 // Typedefs pertaining to the kernel
 typedef CGAL::Exact_predicates_inexact_constructions_kernel  K;
 typedef CGAL::Polyhedron_3<K>                     Polyhedron_3;
@@ -53,7 +56,7 @@ typedef std::map<Dart_handle_CH, Dart_handle_3>   glue_vol_blueprint;
 typedef std::pair<CHDH_to_VH3_map,CHDH_to_VH3_map>   CH_to_in_out_vertices;
 typedef std::pair<std::vector<Dart_handle_3>, std::map<Dart_handle_3, Dart_handle_3>> inner_face_and_map;
 
-int positive_modulo(int i, int base){
+inline int positive_modulo(int i, int base){
   return (base + (i % base)) % base;
 }
 
@@ -437,3 +440,5 @@ void lloyd_relaxation(LCC_3 &lcc, int num_iter, double r_in, double r_out){
   }
   return;
 }
+
+#endif
