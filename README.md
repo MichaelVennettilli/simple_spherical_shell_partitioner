@@ -1,5 +1,7 @@
 # Convex Hull to Spherical Shell
 
+This documentation uses [XHub](https://chrome.google.com/webstore/detail/xhub/anidddebgkllnnnnjfkmjcaallemhjee) to render TeX. The provided link works for installing the extension in Chrome or Opera.
+
 This code provides some basic utilities constructing a specific geometries in CGAL. In particular, it was written to do three primary things.
 
 1. Given a set of points (>3), an inner radius, and an outer radius, this can produce a polyhedral partition of the spherical shell bounded by the two radii into the specified number of polyhedra.
