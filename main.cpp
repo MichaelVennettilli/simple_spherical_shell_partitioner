@@ -6,7 +6,7 @@
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/convex_hull_3.h>
-#include "shell_partitioner.h"
+#include "minimal_shell_partitioner.h"
 
 #include <vector>
 #include <random>

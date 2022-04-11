@@ -36,8 +36,8 @@ SOFTWARE.
 #include <map>
 #include <utility>
 
-#ifndef SHELL_PARTITIONER_H
-#define SHELL_PARTITIONER_H
+#ifndef MINIMAL_SHELL_PARTITIONER_H
+#define MINIMAL_SHELL_PARTITIONER_H
 
 // Typedefs pertaining to the kernel
 typedef CGAL::Exact_predicates_inexact_constructions_kernel  K;
